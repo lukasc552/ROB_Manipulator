@@ -161,7 +161,6 @@ class Root(Tk):
         # temp_l1 = self.app_frame.entry_l1
         # temp_l2 = self.app_frame.entry_l2
         # temp_l3 = self.app_frame.entry_l3
-
         try:
             self.entry_fi1 = float(self.app_frame.entry11.get())*np.pi/180
             self.entry_fi2 = float(self.app_frame.entry12.get())*np.pi/180
