@@ -153,8 +153,8 @@ class Manipulator:
 
     def draw_manipulator_3d(self, figure, point_a, point_b, point_c):
         body = np.array([[self.start_x, point_a[0, :], point_b[0, :], point_c[0, :]],
-                [self.start_y, point_a[1, :], point_b[1, :], point_c[1, :]],
-                [self.start_z, point_a[2, :], point_b[2, :], point_c[2, :]]], dtype=np.dtype(np.float64))
+                         [self.start_y, point_a[1, :], point_b[1, :], point_c[1, :]],
+                         [self.start_z, point_a[2, :], point_b[2, :], point_c[2, :]]], dtype=np.dtype(np.float64))
 
         # subplot3d = figure.add_subplot(num_of_figure, projection='3d')
 
@@ -177,4 +177,57 @@ class Manipulator:
 
         # Bod C
         figure.plot(point_c[0], point_c[1], point_c[2], 'co', markersize=5)
+
+    def draw_system(self, figure, k_sys = 0):
+        R_z_fi1 = np.array([[np.sin(self.fi1), -np.cos(self.fi1), 0, 0],
+                            [np.cos(self.fi1), np.sin(self.fi1), 0, 0],
+                            [0, 0, 1, 0],
+                            [0, 0, 0, 1]])
+
+        T_z_l1 = np.array([[1, 0, 0, 0],
+                           [0, 1, 0, 0],
+                           [0, 0, 1, self.l1],
+                           [0, 0, 0, 1]])
+
+        R_y_fi2 = np.array([[np.cos(self.fi2), 0, np.sin(self.fi2), 0],
+                            [0, 1, 0, 0],
+                            [-np.sin(self.fi2), 0, np.cos(self.fi2), 0],
+                            [0, 0, 0, 1]])
+
+        T_z_l2 = np.array([[1, 0, 0, 0],
+                           [0, 1, 0, 0],
+                           [0, 0, 1, self.l2],
+                           [0, 0, 0, 1]])
+
+        R_y_fi3 = np.array([[np.cos(self.fi3), 0, np.sin(self.fi3), 0],
+                            [0, 1, 0, 0],
+                            [-np.sin(self.fi3), 0, np.cos(self.fi3), 0],
+                            [0, 0, 0, 1]])
+
+        line_size = 100
+        ones_vector = np.array([[1, 1, 1, 1]])
+        A = np.zeros([4, 1])
+
+        if k_sys == 0:
+            # A[:, 0] = ones_vector
+            pass
+        elif k_sys == 1:
+            A[:, 0] = np.matmul(R_z_fi1, ones_vector)
+        elif k_sys == 2:
+            A[:, 0] = np.matmul(np.matmul(R_z_fi1, T_z_l1), ones_vector)
+        elif k_sys == 3:
+            A[:, 0] = np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), ones_vector)
+        elif k_sys == 4:
+            A[:, 0] = np.matmul(np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), T_z_l2), ones_vector)
+        elif k_sys == 5:
+            A[:, 0] = np.matmul(np.matmul(np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), T_z_l2), R_y_fi3), ones_vector)
+        else:
+            pass
+
+        # x-ova os
+        figure.plot([A[0, 0], A[0, 0]+line_size], [A[1, 0], A[1, 0]], [A[2, 0], A[2, 0]], 'r-')
+        # y-ova os
+        figure.plot([A[0, 0], A[0, 0]], [A[1, 0], A[1, 0]+line_size], [A[2, 0], A[2, 0]], 'g-')
+        # z-ova os
+        figure.plot([A[0, 0], A[0, 0]], [A[1, 0], A[1, 0]], [A[2, 0], A[2, 0]+line_size], 'co-')
 
