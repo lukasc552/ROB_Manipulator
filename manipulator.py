@@ -159,9 +159,12 @@ class Manipulator:
         # subplot3d = figure.add_subplot(num_of_figure, projection='3d')
 
         figure.plot(body[0], body[1], body[2], 'r-', linewidth=4)
-        figure.set_xlim3d([-0.3, 0.3])
-        figure.set_ylim3d([-0.3, 0.3])
-        figure.set_zlim3d([0, 0.6])
+        figure.set_xlim3d([-0.2, 0.2])
+        figure.set_ylim3d([-0.2, 0.2])
+        figure.set_zlim3d([0, 0.5])
+        figure.set_xticks([-0.2, -0.1, 0, 0.1, 0.2])
+        figure.set_yticks([-0.2, -0.1, 0, 0.1, 0.2])
+        figure.set_zticks([0, 0.1, 0.2, 0.3, 0.4])
 
         figure.set_xlabel('X[m]')
         figure.set_ylabel('Y[m]')
@@ -204,30 +207,87 @@ class Manipulator:
                             [-np.sin(self.fi3), 0, np.cos(self.fi3), 0],
                             [0, 0, 0, 1]])
 
-        line_size = 100
-        ones_vector = np.array([[1, 1, 1, 1]])
-        A = np.zeros([4, 1])
+        line_size = 0.1
+        lines_vector = np.array([[line_size],
+                                 [line_size],
+                                 [line_size],
+                                 [1]])
+
+        ones_vector = np.ones([4, 1])
+        x_vector = np.array([[line_size],
+                             [0],
+                             [0],
+                             [1]])
+        y_vector = np.array([[0],
+                             [line_size],
+                             [0],
+                             [1]])
+        z_vector = np.array([[0],
+                             [0],
+                             [line_size],
+                             [1]])
+        zero_vector = np.zeros([4, 1])
+        v = np.array([[0],
+                      [0],
+                      [0],
+                      [1]])
+        x = np.zeros([4, 1])
+        y = np.zeros([4, 1])
+        z = np.zeros([4, 1])
+        # if k_sys == 0:
+        #     # zero_vector[:, 0] = ones_vector
+        #     pass
+        # elif k_sys == 1:
+        #     zero_vector = np.matmul(R_z_fi1, ones_vector)
+        # elif k_sys == 2:
+        #     zero_vector = np.matmul(np.matmul(R_z_fi1, T_z_l1), ones_vector)
+        # elif k_sys == 3:
+        #     zero_vector = np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), ones_vector)
+        # elif k_sys == 4:
+        #     zero_vector = np.matmul(np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), T_z_l2), ones_vector)
+        # elif k_sys == 5:
+        #     zero_vector = np.matmul(np.matmul(np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), T_z_l2), R_y_fi3), ones_vector)
 
         if k_sys == 0:
-            # A[:, 0] = ones_vector
-            pass
+            x = x_vector
+            y = y_vector
+            z = z_vector
         elif k_sys == 1:
-            A[:, 0] = np.matmul(R_z_fi1, ones_vector)
+            x = np.matmul(R_z_fi1, x_vector)
+            y = np.matmul(R_z_fi1, y_vector)
+            z = np.matmul(R_z_fi1, z_vector)
         elif k_sys == 2:
-            A[:, 0] = np.matmul(np.matmul(R_z_fi1, T_z_l1), ones_vector)
+            zero_vector = np.matmul(R_z_fi1, T_z_l1)
+            x = np.matmul(zero_vector, x_vector)
+            y = np.matmul(zero_vector, y_vector)
+            z = np.matmul(zero_vector, z_vector)
+            zero_vector = np.matmul(zero_vector, v)
         elif k_sys == 3:
-            A[:, 0] = np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), ones_vector)
+            zero_vector = np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2)
+            x = np.matmul(zero_vector, x_vector)
+            y = np.matmul(zero_vector, y_vector)
+            z = np.matmul(zero_vector, z_vector)
+            zero_vector = np.matmul(zero_vector, v)
         elif k_sys == 4:
-            A[:, 0] = np.matmul(np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), T_z_l2), ones_vector)
+            zero_vector = np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), T_z_l2)
+            x = np.matmul(zero_vector, x_vector)
+            y = np.matmul(zero_vector, y_vector)
+            z = np.matmul(zero_vector, z_vector)
+            zero_vector = np.matmul(zero_vector, v)
         elif k_sys == 5:
-            A[:, 0] = np.matmul(np.matmul(np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), T_z_l2), R_y_fi3), ones_vector)
-        else:
-            pass
+            zero_vector = np.matmul(np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), T_z_l2), R_y_fi3)
+            x = np.matmul(zero_vector, x_vector)
+            y = np.matmul(zero_vector, y_vector)
+            z = np.matmul(zero_vector, z_vector)
+            zero_vector = np.matmul(zero_vector, v)
 
         # x-ova os
-        figure.plot([A[0, 0], A[0, 0]+line_size], [A[1, 0], A[1, 0]], [A[2, 0], A[2, 0]], 'r-')
+        figure.plot([zero_vector[0, 0], x[0, 0]], [zero_vector[1, 0], x[1, 0]], [zero_vector[2, 0], x[2, 0]], 'r-', linewidth=1)
         # y-ova os
-        figure.plot([A[0, 0], A[0, 0]], [A[1, 0], A[1, 0]+line_size], [A[2, 0], A[2, 0]], 'g-')
+        figure.plot([zero_vector[0, 0], y[0, 0]], [zero_vector[1, 0], y[1, 0]], [zero_vector[2, 0], y[2, 0]], 'g-', linewidth=1)
         # z-ova os
-        figure.plot([A[0, 0], A[0, 0]], [A[1, 0], A[1, 0]], [A[2, 0], A[2, 0]+line_size], 'co-')
+        figure.plot([zero_vector[0, 0], z[0, 0]], [zero_vector[1, 0], z[1, 0]], [zero_vector[2, 0], z[2, 0]], 'b-', linewidth=1)
+        # figure.plot([zero_vector[0, 0], zero_vector[0, 0]+line_size], [zero_vector[1, 0], zero_vector[1, 0]], [zero_vector[2, 0], zero_vector[2, 0]], 'r-', linewidth=1)
+        # figure.plot([zero_vector[0, 0], zero_vector[0, 0]], [zero_vector[1, 0], zero_vector[1, 0]+line_size], [zero_vector[2, 0], zero_vector[2, 0]], 'g-', linewidth=1)
+        # figure.plot([zero_vector[0, 0], zero_vector[0, 0]], [zero_vector[1, 0], zero_vector[1, 0]], [zero_vector[2, 0], zero_vector[2, 0]+line_size], 'b-', linewidth=1)
 

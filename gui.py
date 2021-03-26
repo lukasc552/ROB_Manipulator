@@ -42,8 +42,9 @@ class Root(Tk):
         # self.fi2 = 45 * np.pi / 180
         # self.fi3 = 30 * np.pi / 180
 
-        self.figure = Figure(figsize=(8, 8), dpi=100)
+        self.figure = Figure(figsize=(10, 10), dpi=100)
         self.subplot3d = self.figure.add_subplot(221, projection='3d')
+
         self.subplot3d.view_init(20, 30)
 
         # self.subplot3d.mouse_init()
@@ -177,6 +178,20 @@ class Root(Tk):
         self.manipulator.draw_manipulator_3d(self.subplot3d, A, B, C)
         # self.subplot3d.set_animated(True)
 
+    def draw_systems(self):
+        if self.app_frame.checkbox_0.get() == 1:
+            self.manipulator.draw_system(self.subplot3d, 0)
+        if self.app_frame.checkbox_1.get() == 1:
+            self.manipulator.draw_system(self.subplot3d, 1)
+        if self.app_frame.checkbox_2.get() == 1:
+            self.manipulator.draw_system(self.subplot3d, 2)
+        if self.app_frame.checkbox_3.get() == 1:
+            self.manipulator.draw_system(self.subplot3d, 3)
+        if self.app_frame.checkbox_4.get() == 1:
+            self.manipulator.draw_system(self.subplot3d, 4)
+        if self.app_frame.checkbox_5.get() == 1:
+            self.manipulator.draw_system(self.subplot3d, 5)
+
     def update(self):
         try:
             self.entry_fi1 = float(self.app_frame.entry11.get())*np.pi/180
@@ -207,7 +222,7 @@ class Root(Tk):
 
         # self.subplot3d.view_init(self.var_scale1, 30)
         self.draw_in_3d()
-
+        self.draw_systems()
         # self.draw_robot_work_area_yz()
         # self.draw_robot_work_area_xy()
 
@@ -223,8 +238,8 @@ class Root(Tk):
     def work_panel(self):
         # self.waiting = Label(self, text='Prebieha vypocet...', fg="red")
         kresli = Button(self.app_frame, text='Vykresli', command=self.vykresli)
-        kresli.grid(row=12, column=1, columnspan=3)
-        Button(self.app_frame, text='Quit', command=self.quit).grid(row=13, column=1, columnspan=3, pady=20)
+        kresli.grid(row=12, column=3, rowspan=3)
+        Button(self.app_frame, text='Quit', command=self.quit).grid(row=17, column=1, columnspan=3, pady=20)
 
         # ============ 2. Cast=======
     #     self.scale1 = Scale(self.app_frame, from_=0, to_=50, command=self.on_scale1)
@@ -253,6 +268,13 @@ class Frames(Frame):
         super().__init__(master)
         self.master = master
 
+        self.checkbox_0 = IntVar()
+        self.checkbox_1 = IntVar()
+        self.checkbox_2 = IntVar()
+        self.checkbox_3 = IntVar()
+        self.checkbox_4 = IntVar()
+        self.checkbox_5 = IntVar()
+
         self.initUI()
 
     # def get_fis_and_ls(self):
@@ -269,7 +291,7 @@ class Frames(Frame):
         self.columnconfigure(4, pad=10)
         # self.columnconfigure(3, weight=1)
 
-        for i in range(1, 13):
+        for i in range(1, 16):
             self.rowconfigure(i, pad=5)
 
         label1 = Label(self, text="Interaktivne polohovanie manipulatora")
@@ -311,53 +333,71 @@ class Frames(Frame):
         self.entry22.insert(0, self.master.entry_l2)
         self.entry23.insert(0, self.master.entry_l3)
 
+        # ============ Suradnicove systemy =========
+        label1 = Label(self, text="Suradnicove systemy")
+        label1.grid(row=5, column=1, columnspan=3, pady=10, padx=2, sticky=E + W + N + S)
 
+        Checkbutton(self, text='0', variable=self.checkbox_0, onvalue=1, offvalue=0).grid(row=6, column=1, padx=0,
+                                                                                          pady=0, sticky=W + E)
+        Checkbutton(self, text='1', variable=self.checkbox_1, onvalue=1, offvalue=0).grid(row=6, column=2, padx=0,
+                                                                                          pady=0, sticky=W + E)
+        Checkbutton(self, text='2', variable=self.checkbox_2, onvalue=1, offvalue=0).grid(row=6, column=3, padx=0,
+                                                                                          pady=0, sticky=W + E)
+        Checkbutton(self, text='3', variable=self.checkbox_3, onvalue=1, offvalue=0).grid(row=7, column=1, padx=0,
+                                                                                          pady=0, sticky=W + E)
+        Checkbutton(self, text='4', variable=self.checkbox_4, onvalue=1, offvalue=0).grid(row=7, column=2, padx=0,
+                                                                                          pady=0, sticky=W + E)
+        Checkbutton(self, text='5', variable=self.checkbox_5, onvalue=1, offvalue=0).grid(row=7, column=3, padx=0,
+                                                                                          pady=0, sticky=W + E)
 
-        #============ 2. Cast=======
+        #============ 3. Cast=======
         label1 = Label(self, text="Pracovny priestor")
-        label1.grid(row=5, column=1, columnspan=2, pady=10, padx=2, sticky=E + W + N + S)
+        label1.grid(row=9, column=1, columnspan=2, pady=10, padx=2, sticky=E + W + N + S)
 
-        Label(self, text="Fi_{1} min [°]").grid(row=6, column=1, padx=0, pady=0, sticky=W + E)
-        Label(self, text="Fi_{1} max [°]").grid(row=6, column=2, padx=0, pady=0, sticky=W + E)
+        Label(self, text="Fi_{1} min [°]").grid(row=10, column=1, padx=0, pady=0, sticky=W + E)
+        Label(self, text="Fi_{1} max [°]").grid(row=10, column=2, padx=0, pady=0, sticky=W + E)
 
         self.entry_fi1_min = Entry(self)
         self.entry_fi1_max = Entry(self)
 
-        self.entry_fi1_min.grid(row=7, column=1, padx=0, pady=0, sticky=W + E)
-        self.entry_fi1_max.grid(row=7, column=2, padx=0, pady=0, sticky=W + E)
+        self.entry_fi1_min.grid(row=11, column=1, padx=0, pady=0, sticky=W + E)
+        self.entry_fi1_max.grid(row=11, column=2, padx=0, pady=0, sticky=W + E)
 
         self.entry_fi1_min.insert(0, self.master.entry_fi1_min)
         self.entry_fi1_max.insert(0, self.master.entry_fi1_max)
 
         ####=========================== FI2
-        Label(self, text="Fi_{2} min [°]").grid(row=8, column=1, padx=0, pady=0, sticky=W + E)
-        Label(self, text="Fi_{2} max [°]").grid(row=8, column=2, padx=0, pady=0, sticky=W + E)
+        Label(self, text="Fi_{2} min [°]").grid(row=12, column=1, padx=0, pady=0, sticky=W + E)
+        Label(self, text="Fi_{2} max [°]").grid(row=12, column=2, padx=0, pady=0, sticky=W + E)
 
         self.entry_fi2_min = Entry(self)
         self.entry_fi2_max = Entry(self)
 
-        self.entry_fi2_min.grid(row=9, column=1, padx=0, pady=0, sticky=W + E)
-        self.entry_fi2_max.grid(row=9, column=2, padx=0, pady=0, sticky=W + E)
+        self.entry_fi2_min.grid(row=13, column=1, padx=0, pady=0, sticky=W + E)
+        self.entry_fi2_max.grid(row=13, column=2, padx=0, pady=0, sticky=W + E)
 
         self.entry_fi2_min.insert(0, self.master.entry_fi2_min)
         self.entry_fi2_max.insert(0, self.master.entry_fi2_max)
 
         ####=========================== FI3 =============================
-        Label(self, text="Fi_{3} min [°]").grid(row=10, column=1, padx=0, pady=0, sticky=W + E)
-        Label(self, text="Fi_{3} max [°]").grid(row=10, column=2, padx=0, pady=0, sticky=W + E)
+        Label(self, text="Fi_{3} min [°]").grid(row=14, column=1, padx=0, pady=0, sticky=W + E)
+        Label(self, text="Fi_{3} max [°]").grid(row=14, column=2, padx=0, pady=0, sticky=W + E)
 
         self.entry_fi3_min = Entry(self)
         self.entry_fi3_max = Entry(self)
 
-        self.entry_fi3_min.grid(row=11, column=1, padx=0, pady=0, sticky=W + E)
-        self.entry_fi3_max.grid(row=11, column=2, padx=0, pady=0, sticky=W + E)
+        self.entry_fi3_min.grid(row=15, column=1, padx=0, pady=0, sticky=W + E)
+        self.entry_fi3_max.grid(row=15, column=2, padx=0, pady=0, sticky=W + E)
 
         self.entry_fi3_min.insert(0, self.master.entry_fi3_min)
         self.entry_fi3_max.insert(0, self.master.entry_fi3_max)
 
-        #============ Suradnicove systemy =========
-        label1 = Label(self, text="Suradnicove systemy")
-        label1.grid(row=14, column=1, columnspan=2, pady=10, padx=2, sticky=E + W + N + S)
+        ##======= Textik =======
+        Label(self, text="-----dkbdbiervuneoruvneiurnvnnnnnnnnnnnnnnnnnnn\n"
+                         "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn\n"
+                         "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\n"
+                         "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\n"
+                         "ffffffffffffffffffffddddddddddddddddddddfffwe--").grid(row=16, column=1, columnspan=3, padx=0, pady=0)
 
 
 
