@@ -38,19 +38,25 @@ class Root(Tk):
         self.entry_fi2_max = 125
         self.entry_fi3_min = 0
         self.entry_fi3_max = 120
+        self.fi1_log = self.entry_fi1_min
+        self.fi2_log = self.entry_fi2_min
+        self.fi3_log = self.entry_fi3_min
+        self.angle_step = 0.1
         # self.fi1 = -30 * np.pi / 180
         # self.fi2 = 45 * np.pi / 180
         # self.fi3 = 30 * np.pi / 180
 
-        self.figure = Figure(figsize=(10, 10), dpi=100)
+        self.figure = Figure(figsize=(9, 9), dpi=100)
         self.subplot3d = self.figure.add_subplot(221, projection='3d')
+        self.subplot3d.view_init(20, 30)
 
+        self.subplot_obalka_3d = self.figure.add_subplot(222, projection='3d')
+        self.subplot_obalka_3d.grid()
         self.subplot3d.view_init(20, 30)
 
         # self.subplot3d.mouse_init()
         self.subplot_obalka_yz = self.figure.add_subplot(223)
         self.subplot_obalka_yz.grid()
-
 
         self.subplot_obalka_xy = self.figure.add_subplot(224)
         self.subplot_obalka_yz.grid()
@@ -65,18 +71,18 @@ class Root(Tk):
 
         # self.canvas.pick(MouseEvent)
 
-        toolbar = NavigationToolbar2Tk(self.canvas, self)
-        toolbar.update()
+        # toolbar = NavigationToolbar2Tk(self.canvas, self)
+        # toolbar.update()
         self.canvas.get_tk_widget().pack(side=RIGHT, expand=True)
         # self.canvas._tkcanvas.pack(side=TOP, fill=BOTH, expand=True)
 
         self.app_frame = Frames(self)
         self.work_panel()
 
-    def draw_robot_work_area_yz(self, delta_fi = 0.1):
-        l1 = 203.0  # mm
-        l2 = 178.0  # mm
-        l3 = 178.0  # mm
+    def draw_robot_work_area_2ds(self, delta_fi = 0.1):
+        # l1 = 203.0  # mm
+        # l2 = 178.0  # mm
+        # l3 = 178.0  # mm
         phi1_max = to_radian(self.entry_fi1_max)
         phi1_min = to_radian(self.entry_fi1_min)
         phi1_range = np.arange(phi1_min, phi1_max, delta_fi)
@@ -101,7 +107,7 @@ class Root(Tk):
         for fi1 in phi1_range:
             for fi2 in phi2_range:
                 for fi3 in phi3_range:
-                    a, b, c = self.manipulator.calculate_position_from_temp_data(fi1, fi2, fi3, l1, l2, l3)
+                    a, b, c = self.manipulator.calculate_position_from_temp_data(fi1, fi2, fi3, self.entry_l1, self.entry_l2, self.entry_l3)
                     list_a[:, index] = a[:, 0]
                     list_b[:, index] = b[:, 0]
                     list_c[:, index] = c[:, 0]
@@ -109,8 +115,6 @@ class Root(Tk):
                         list_c_fi_in_zero[:, index0] = c[:, 0]
                         index0 += 1
                     index = index + 1
-
-        # print(str(index))
 
         self.subplot_obalka_yz.set_title("Pracovny priestor v rovine Y0Z")
         self.subplot_obalka_yz.plot(list_c_fi_in_zero[1, :], list_c_fi_in_zero[2, :], 'o', lw=0.1)
@@ -122,44 +126,48 @@ class Root(Tk):
         self.subplot_obalka_xy.set_xlabel('y')
         self.subplot_obalka_xy.set_ylabel('x')
 
+        # self.subplot_obalka_3d.set_title("Pracovna oblast robota v priestore")
+        # self.subplot_obalka_3d.plot()
+
     def vykresli(self):
         self.subplot_obalka_yz.clear()
         self.subplot_obalka_xy.clear()
-        self.draw_robot_work_area_yz()
+        # self.subplot_obalka_3d.clear()
+        self.draw_robot_work_area_2ds()
 
-    def draw_robot_work_area_xy(self, delta_fi = 0.1):
-        l1 = 203.0  # mm
-        l2 = 178.0  # mm
-        l3 = 178.0  # mm
-        phi1_max = to_radian(90)
-        phi1_min = to_radian(-90)
-        phi1_range = np.arange(phi1_min, phi1_max, delta_fi)
-        phi2_max = to_radian(125)
-        phi2_min = to_radian(-55)
-        phi2_range = np.arange(phi2_min, phi2_max, delta_fi)
-
-        phi3_max = to_radian(150)
-        phi3_min = to_radian(0)
-        phi3_range = np.arange(phi3_min, phi3_max, delta_fi)
-        length = len(phi1_range) * len(phi2_range) * len(phi3_range)
-        list_a = np.zeros([4, length])
-        list_b = np.zeros([4, length])
-        list_c = np.zeros([4, length])
-
-        index = 0
-        for fi1 in phi1_range:
-            for fi2 in phi2_range:
-                for fi3 in phi3_range:
-                    a, b, c = self.manipulator.calculate_position_from_temp_data(fi1, fi2, fi3, l1, l2, l3)
-                    # list_a[:, index] = a[:, 0]
-                    # list_b[:, index] = b[:, 0]
-                    list_c[:, index] = c[:, 0]
-                    index = index + 1
-
-        self.subplot_obalka_xy.set_title("Pracovny priestor v rovine Y0Z")
-        self.subplot_obalka_xy.plot(list_c[0, :], list_c[1, :], 'o', lw=0.4)
-        self.subplot_obalka_xy.set_xlabel('x')
-        self.subplot_obalka_xy.set_ylabel('y')
+    # def draw_robot_work_area_xy(self, delta_fi = 0.1):
+    #     l1 = 203.0  # mm
+    #     l2 = 178.0  # mm
+    #     l3 = 178.0  # mm
+    #     phi1_max = to_radian(90)
+    #     phi1_min = to_radian(-90)
+    #     phi1_range = np.arange(phi1_min, phi1_max, delta_fi)
+    #     phi2_max = to_radian(125)
+    #     phi2_min = to_radian(-55)
+    #     phi2_range = np.arange(phi2_min, phi2_max, delta_fi)
+    #
+    #     phi3_max = to_radian(150)
+    #     phi3_min = to_radian(0)
+    #     phi3_range = np.arange(phi3_min, phi3_max, delta_fi)
+    #     length = len(phi1_range) * len(phi2_range) * len(phi3_range)
+    #     list_a = np.zeros([4, length])
+    #     list_b = np.zeros([4, length])
+    #     list_c = np.zeros([4, length])
+    #
+    #     index = 0
+    #     for fi1 in phi1_range:
+    #         for fi2 in phi2_range:
+    #             for fi3 in phi3_range:
+    #                 a, b, c = self.manipulator.calculate_position_from_temp_data(fi1, fi2, fi3, l1, l2, l3)
+    #                 # list_a[:, index] = a[:, 0]
+    #                 # list_b[:, index] = b[:, 0]
+    #                 list_c[:, index] = c[:, 0]
+    #                 index = index + 1
+    #
+    #     self.subplot_obalka_xy.set_title("Pracovny priestor v rovine Y0Z")
+    #     self.subplot_obalka_xy.plot(list_c[0, :], list_c[1, :], 'o', lw=0.4)
+    #     self.subplot_obalka_xy.set_xlabel('x')
+    #     self.subplot_obalka_xy.set_ylabel('y')
 
     def draw_in_2d(self):
         A = self.manipulator.pos_a
@@ -171,12 +179,8 @@ class Root(Tk):
         A = self.manipulator.pos_a
         B = self.manipulator.pos_b
         C = self.manipulator.pos_c
-        # print("A: " + str(self.manipulator.pos_a))
-        # print("B: " + str(self.manipulator.pos_b))
-        # print("C: " + str(self.manipulator.pos_c))
         self.subplot3d.set_title("Pozicia manipulatora v 3D priestore")
         self.manipulator.draw_manipulator_3d(self.subplot3d, A, B, C)
-        # self.subplot3d.set_animated(True)
 
     def draw_systems(self):
         if self.app_frame.checkbox_0.get() == 1:
@@ -206,8 +210,10 @@ class Root(Tk):
             self.entry_fi2_max = float(self.app_frame.entry_fi2_max.get())
             self.entry_fi3_min = float(self.app_frame.entry_fi3_min.get())
             self.entry_fi3_max = float(self.app_frame.entry_fi3_max.get())
+            self.label_error_msg.pack_forget()
         except ValueError:
-            Label(self, text='Naespravne zadane udaje', fg="red").grid(row=6, column=1, columnspan=3)
+              #.grid(row=6, column=1, columnspan=3)
+            self.label_error_msg.pack(side=TOP)
             # errormsg.grid(row=6, column=1, columnspan=3)
 
         self.manipulator.set_fi1(self.entry_fi1)
@@ -226,7 +232,21 @@ class Root(Tk):
         # self.draw_robot_work_area_yz()
         # self.draw_robot_work_area_xy()
 
-        # self.test_draw()
+        a_current, b_current, c_current = self.manipulator.calculate_position_from_temp_data(self.fi1_log, self.fi2_log, self.fi3_log, self.entry_l1, self.entry_l2, self.entry_l3)
+        self.subplot_obalka_3d.set_title("Animacia manipulatora v 3D priestore")
+        self.manipulator.draw_manipulator_3d(self.subplot_obalka_3d, a_current, b_current, c_current)
+        if self.fi1_log >= self.entry_fi1_max:
+            self.fi1_log = self.entry_fi1_min
+        else:
+            self.fi1_log += self.angle_step
+        if self.fi2_log >= self.entry_fi2_max:
+            self.fi2_log = self.entry_fi2_min
+        else:
+            self.fi2_log += self.angle_step
+        if self.fi3_log >= self.entry_fi3_max:
+            self.fi3_log = self.entry_fi3_min
+        else:
+            self.fi3_log += self.angle_step
 
         self.canvas.get_tk_widget().pack(side=RIGHT)
         # self.app_frame.initUI()
@@ -240,20 +260,12 @@ class Root(Tk):
         kresli = Button(self.app_frame, text='Vykresli', command=self.vykresli)
         kresli.grid(row=12, column=3, rowspan=3)
         Button(self.app_frame, text='Quit', command=self.quit).grid(row=17, column=1, columnspan=3, pady=20)
+        self.label_error_msg = Label(self, text='Nespravne zadane udaje', fg="red")
 
-        # ============ 2. Cast=======
-    #     self.scale1 = Scale(self.app_frame, from_=0, to_=50, command=self.on_scale1)
-    #     self.scale1.grid(row=7, column=1, columnspan=2, padx=5)
-    #     self.var_scale1 = IntVar()
-    #     self.label_scale1 = Label(self.app_frame, text=0, textvariable=self.var_scale1)
-    #     self.label_scale1.grid(row=7, column=3, sticky=W + E)
-    #
-    # def on_scale1(self, val):
-    #     v = int(float(val))
-    #     self.var_scale1.set(v)
 
     def animate(self, i):
         self.subplot3d.clear()
+        self.subplot_obalka_3d.clear()
         # self.subplot_obalka_yz.clear()
         # self.subplot_obalka_xy.clear()
         self.update()
@@ -351,7 +363,7 @@ class Frames(Frame):
                                                                                           pady=0, sticky=W + E)
 
         #============ 3. Cast=======
-        label1 = Label(self, text="Pracovny priestor")
+        label1 = Label(self, text="Pracovny priestor (obalka)")
         label1.grid(row=9, column=1, columnspan=2, pady=10, padx=2, sticky=E + W + N + S)
 
         Label(self, text="Fi_{1} min [°]").grid(row=10, column=1, padx=0, pady=0, sticky=W + E)

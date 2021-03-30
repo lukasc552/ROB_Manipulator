@@ -169,9 +169,6 @@ class Manipulator:
         figure.set_xlabel('X[m]')
         figure.set_ylabel('Y[m]')
         figure.set_zlabel('Z[m]')
-
-        # figure.plot(body[0], body[1], 'r-', linewidth=6)
-        #
         # A koleno
         figure.plot(point_a[0], point_a[1], point_a[2], 'co', markersize=8)
 
@@ -208,12 +205,6 @@ class Manipulator:
                             [0, 0, 0, 1]])
 
         line_size = 0.1
-        lines_vector = np.array([[line_size],
-                                 [line_size],
-                                 [line_size],
-                                 [1]])
-
-        ones_vector = np.ones([4, 1])
         x_vector = np.array([[line_size],
                              [0],
                              [0],
@@ -227,26 +218,13 @@ class Manipulator:
                              [line_size],
                              [1]])
         zero_vector = np.zeros([4, 1])
-        v = np.array([[0],
+        empty_vector = np.array([[0],
                       [0],
                       [0],
                       [1]])
         x = np.zeros([4, 1])
         y = np.zeros([4, 1])
         z = np.zeros([4, 1])
-        # if k_sys == 0:
-        #     # zero_vector[:, 0] = ones_vector
-        #     pass
-        # elif k_sys == 1:
-        #     zero_vector = np.matmul(R_z_fi1, ones_vector)
-        # elif k_sys == 2:
-        #     zero_vector = np.matmul(np.matmul(R_z_fi1, T_z_l1), ones_vector)
-        # elif k_sys == 3:
-        #     zero_vector = np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), ones_vector)
-        # elif k_sys == 4:
-        #     zero_vector = np.matmul(np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), T_z_l2), ones_vector)
-        # elif k_sys == 5:
-        #     zero_vector = np.matmul(np.matmul(np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), T_z_l2), R_y_fi3), ones_vector)
 
         if k_sys == 0:
             x = x_vector
@@ -261,25 +239,25 @@ class Manipulator:
             x = np.matmul(zero_vector, x_vector)
             y = np.matmul(zero_vector, y_vector)
             z = np.matmul(zero_vector, z_vector)
-            zero_vector = np.matmul(zero_vector, v)
+            zero_vector = np.matmul(zero_vector, empty_vector)
         elif k_sys == 3:
             zero_vector = np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2)
             x = np.matmul(zero_vector, x_vector)
             y = np.matmul(zero_vector, y_vector)
             z = np.matmul(zero_vector, z_vector)
-            zero_vector = np.matmul(zero_vector, v)
+            zero_vector = np.matmul(zero_vector, empty_vector)
         elif k_sys == 4:
             zero_vector = np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), T_z_l2)
             x = np.matmul(zero_vector, x_vector)
             y = np.matmul(zero_vector, y_vector)
             z = np.matmul(zero_vector, z_vector)
-            zero_vector = np.matmul(zero_vector, v)
+            zero_vector = np.matmul(zero_vector, empty_vector)
         elif k_sys == 5:
             zero_vector = np.matmul(np.matmul(np.matmul(np.matmul(R_z_fi1, T_z_l1), R_y_fi2), T_z_l2), R_y_fi3)
             x = np.matmul(zero_vector, x_vector)
             y = np.matmul(zero_vector, y_vector)
             z = np.matmul(zero_vector, z_vector)
-            zero_vector = np.matmul(zero_vector, v)
+            zero_vector = np.matmul(zero_vector, empty_vector)
 
         # x-ova os
         figure.plot([zero_vector[0, 0], x[0, 0]], [zero_vector[1, 0], x[1, 0]], [zero_vector[2, 0], x[2, 0]], 'r-', linewidth=1)
@@ -287,7 +265,5 @@ class Manipulator:
         figure.plot([zero_vector[0, 0], y[0, 0]], [zero_vector[1, 0], y[1, 0]], [zero_vector[2, 0], y[2, 0]], 'g-', linewidth=1)
         # z-ova os
         figure.plot([zero_vector[0, 0], z[0, 0]], [zero_vector[1, 0], z[1, 0]], [zero_vector[2, 0], z[2, 0]], 'b-', linewidth=1)
-        # figure.plot([zero_vector[0, 0], zero_vector[0, 0]+line_size], [zero_vector[1, 0], zero_vector[1, 0]], [zero_vector[2, 0], zero_vector[2, 0]], 'r-', linewidth=1)
-        # figure.plot([zero_vector[0, 0], zero_vector[0, 0]], [zero_vector[1, 0], zero_vector[1, 0]+line_size], [zero_vector[2, 0], zero_vector[2, 0]], 'g-', linewidth=1)
-        # figure.plot([zero_vector[0, 0], zero_vector[0, 0]], [zero_vector[1, 0], zero_vector[1, 0]], [zero_vector[2, 0], zero_vector[2, 0]+line_size], 'b-', linewidth=1)
 
+    
