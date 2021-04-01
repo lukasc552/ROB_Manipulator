@@ -156,8 +156,6 @@ class Manipulator:
                          [self.start_y, point_a[1, :], point_b[1, :], point_c[1, :]],
                          [self.start_z, point_a[2, :], point_b[2, :], point_c[2, :]]], dtype=np.dtype(np.float64))
 
-        # subplot3d = figure.add_subplot(num_of_figure, projection='3d')
-
         figure.plot(body[0], body[1], body[2], 'r-', linewidth=4)
         figure.set_xlim3d([-0.2, 0.2])
         figure.set_ylim3d([-0.2, 0.2])

@@ -221,7 +221,6 @@ class Root(Tk):
         Button(self.app_frame, text='QUIT', command=self.quit).grid(row=19, column=1, columnspan=3, pady=20)
         self.label_error_msg = Label(self, text='Nespravne zadane udaje', fg="red")
 
-
     def animate(self, i):
         self.subplot3d.clear()
         self.subplot_obalka_3d.clear()
